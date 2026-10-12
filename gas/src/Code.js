@@ -142,7 +142,7 @@ function track_(req) {
   };
   if (!rateOk_('track', 300)) return { ok: false, error: 'rate_limited' };
   var lock = LockService.getScriptLock();
-  if (!lock.tryLock(8000)) return { ok: false, error: 'busy' };
+  if (!lock.tryLock(25000)) return { ok: false, error: "busy" };
   try { increment_(hit); } finally { lock.releaseLock(); }
   return { ok: true };
 }
@@ -202,7 +202,7 @@ function early_(req) {
   var month = /^\d{4}-\d{2}$/.test(String(req.exam_month || '')) ? String(req.exam_month) : '';
   if (!rateOk_('early', 30)) return { ok: false, error: 'rate_limited' };
   var lock = LockService.getScriptLock();
-  if (!lock.tryLock(8000)) return { ok: false, error: 'busy' };
+  if (!lock.tryLock(25000)) return { ok: false, error: "busy" };
   try {
     var sh = tab_('EarlyAccess', EARLY_HEADER_);
     var status = 'new';
