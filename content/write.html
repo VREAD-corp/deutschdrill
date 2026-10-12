@@ -1,0 +1,40 @@
+<!--
+title: Writing practice room: timer, word count and self-check
+description: Write a German A1, A2 or B1 exam task against the clock, then run a rule-based self-check. Your text stays in your browser.
+updated: 2026-10-13
+noindex: yes
+app: yes
+-->
+<div id="write-room">
+<p class="task-meta" id="t-meta"></p>
+<h1 id="t-title">Writing practice room</h1>
+<div id="room-missing">
+<p>Choose a task on a level page: <a href="{{base}}a1.html#writing">A1</a>, <a href="{{base}}a2.html#writing">A2</a> or <a href="{{base}}b1.html#writing">B1</a>. The room needs JavaScript; your text is kept only in this browser.</p>
+</div>
+<section id="task-view" hidden>
+<div class="room-bar"><a id="t-back" href="{{base}}">← All tasks of this level</a><span class="small">Spellcheck is off, as in the exam.</span></div>
+<p class="de" lang="de" id="t-sit"></p>
+<p><button type="button" class="ghost" id="t-en-toggle" aria-expanded="false" aria-controls="t-sit-en">Show in English</button></p>
+<p class="en" id="t-sit-en" hidden></p>
+<ul class="points" id="t-points"></ul>
+<div class="timer-box" role="group" aria-label="Exam timer">
+<span id="timer" aria-live="off">0:00</span>
+<button type="button" class="btn" id="timer-start">Start timer</button>
+<button type="button" class="ghost" id="timer-reset">Reset</button>
+<span id="timer-note" class="small" role="status"></span>
+</div>
+<div id="text-mode">
+<label for="answer">Your text in German</label>
+<textarea id="answer" lang="de" spellcheck="false" autocomplete="off" autocapitalize="sentences"></textarea>
+<p class="wc" id="wc" aria-live="polite"></p>
+<p class="cta"><button type="button" class="btn" id="check-btn">Check my text</button> <button type="button" class="ghost" id="clear-btn">Delete text</button></p>
+</div>
+<div id="form-mode" hidden>
+<div id="form-fields"></div>
+<p class="cta"><button type="button" class="btn" id="form-check-btn">Check my form</button></p>
+</div>
+<section id="result" hidden aria-live="polite"></section>
+<details id="model"><summary>Model answer and tips</summary><p class="model" lang="de" id="model-text"></p><ul class="tips" id="model-tips"></ul></details>
+<nav class="pager" aria-label="Other tasks"><a id="t-prev" href="#">← Previous task</a><a id="t-next" href="#">Next task →</a></nav>
+</section>
+</div>

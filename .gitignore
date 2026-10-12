@@ -1,0 +1,8 @@
+node_modules/
+_site/
+test-results/
+playwright-report/
+shots/
+gas/.clasp.json
+gas/.deployment.json
+__pycache__/

@@ -1,0 +1,17 @@
+{
+  "repo": "VREAD-corp/deutschdrill",
+  "brand": "DeutschDrill",
+  "origin": "https://outils.vread.fr",
+  "base": "/deutschdrill/",
+  "accent": "#0d5c4a",
+  "updated": "2026-10-13",
+  "endpoint": "https://script.google.com/macros/s/AKfycbwYciG66y1Cc4kndgN7Zc71rnzKngdZsOYvK96VUPZqxiPDKW4DuSuYEoI-61Wwyv36/exec",
+  "contact": "octave@vread.fr",
+  "nav": [
+    ["A1", "a1.html"],
+    ["A2", "a2.html"],
+    ["B1", "b1.html"],
+    ["Exam day in India", "exam-day-india.html"],
+    ["Early access", "early-access.html"]
+  ]
+}

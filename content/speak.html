@@ -1,0 +1,36 @@
+<!--
+title: Speaking practice room: exam timers and a private recorder
+description: Practise German A1, A2 and B1 speaking prompts with preparation and speaking timers. Record yourself in the browser; the audio is never uploaded.
+updated: 2026-10-13
+noindex: yes
+app: yes
+-->
+<div id="speak-room">
+<p class="task-meta" id="t-meta"></p>
+<h1 id="t-title">Speaking practice room</h1>
+<div id="room-missing">
+<p>Choose a prompt on a level page: <a href="{{base}}a1.html#speaking">A1</a>, <a href="{{base}}a2.html#speaking">A2</a> or <a href="{{base}}b1.html#speaking">B1</a>. The room needs JavaScript.</p>
+</div>
+<section id="task-view" hidden>
+<div class="room-bar"><a id="t-back" href="{{base}}">← All prompts of this level</a></div>
+<p class="de" lang="de" id="t-task"></p>
+<p><button type="button" class="ghost" id="t-en-toggle" aria-expanded="false" aria-controls="t-task-en">Show in English</button></p>
+<p class="en" id="t-task-en" hidden></p>
+<ul class="cues" id="t-cues" aria-label="Keywords"></ul>
+<div class="timer-box" role="group" aria-label="Speaking timer">
+<span id="clock">0:00</span>
+<button type="button" class="btn" id="go-btn">Start preparation</button>
+<button type="button" class="ghost" id="skip-btn" hidden>Skip</button>
+<span id="phase" class="small" role="status"></span>
+</div>
+<div class="rec">
+<p class="rec-toggle"><input type="checkbox" id="rec-on" checked> <label for="rec-on">Record my answer on this device (the browser will ask for the microphone)</label></p>
+<p id="rec-status" class="small" role="status">The recording is kept in this browser tab only. It is never uploaded.</p>
+<audio id="rec-audio" controls hidden></audio>
+<p><a id="rec-download" class="btn secondary" hidden>Save the recording to my device</a> <button type="button" class="ghost" id="rec-delete" hidden>Delete recording</button></p>
+</div>
+<div id="followups-box"><h2>Follow-up questions (Part 3)</h2><p class="small">After your talk, answer each in 20 to 30 seconds.</p><ul id="t-followups"></ul></div>
+<details id="model"><summary>Sample answer and tips</summary><p class="model" lang="de" id="model-text"></p><ul class="tips" id="model-tips"></ul></details>
+<nav class="pager" aria-label="Other prompts"><a id="t-prev" href="#">← Previous prompt</a><a id="t-next" href="#">Next prompt →</a></nav>
+</section>
+</div>

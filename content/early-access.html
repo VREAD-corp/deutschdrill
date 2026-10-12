@@ -1,0 +1,62 @@
+<!--
+title: Writing feedback in 24 hours and mock speaking exams: early access
+description: We are testing two paid options for German A1–B1 learners in India: AI-generated feedback on your writing within 24 hours, and a timed mock speaking exam. No payment today: join the list.
+updated: 2026-10-13
+app: yes
+-->
+<p class="eyebrow">Early access · nothing to pay today</p>
+<h1>Feedback on your German writing within 24 hours, and a mock speaking exam</h1>
+<p class="lead">Neither exists yet. We are checking whether enough learners want them before we build them. If you join the list, we e-mail you once when they open, with the final price. You decide then; no card, no UPI, no payment is asked now.</p>
+
+<h2>What we plan to offer</h2>
+<div class="prices">
+<section class="price">
+<h3>Expert-style feedback on your writing within 24 h</h3>
+<p>You submit a text written in one of our tasks. You get back: the criteria the exam uses (task completion, coherence, vocabulary, structures) each rated with a short reason, your text with corrections marked, and three things to fix first.</p>
+<p class="small"><strong>How it would be made:</strong> by an AI model (a large language model) instructed with the published exam criteria, then checked by our own rules. No human examiner reads it, and it is not an exam score. “Expert-style” means it follows the examiners' criteria, nothing more.</p>
+</section>
+<section class="price">
+<h3>Mock speaking exam</h3>
+<p>The full A2 or B1 speaking module in your browser with exam timing: preparation, planning task with an AI partner, presentation, follow-up questions. Afterwards you get a transcript of what you said with comments on the same criteria.</p>
+<p class="small"><strong>How it would be made:</strong> your recording would have to be sent to a speech-to-text service and an AI model. We would ask for your consent each time, delete the audio after processing, and say which providers we use before you start. You would always know you are talking to an AI.</p>
+</section>
+</div>
+
+<h2>Price we are considering</h2>
+<p>Show prices in <span class="cur-switch" role="group" aria-label="Currency"><button type="button" data-cur="inr" aria-pressed="true">₹ INR</button><button type="button" data-cur="usd" aria-pressed="false">$ USD</button></span></p>
+<div class="prices">
+<section class="price"><h3>Monthly</h3><p><span class="amount" data-price="monthly">₹799</span> per month</p><p class="small">Both options, cancel any month.</p></section>
+<section class="price"><h3>Exam pass</h3><p><span class="amount" data-price="pass3">₹1,999</span> for 3 months</p><p class="small">Both options, one payment, no renewal.</p></section>
+</div>
+<p class="small">Different visitors may see different monthly prices: we are testing what feels fair. Whatever you see here is not an offer; the final price will be in the opening e-mail.</p>
+
+<h2 id="join">Join the early-access list</h2>
+<form id="early-form" novalidate>
+<p class="field"><label for="email">Your e-mail</label><input type="email" id="email" name="email" autocomplete="email" required inputmode="email"></p>
+<fieldset><legend>I am interested in</legend>
+<div class="radio"><input type="radio" id="o-w" name="offer" value="writing"><label for="o-w">Writing feedback</label></div>
+<div class="radio"><input type="radio" id="o-s" name="offer" value="speaking"><label for="o-s">Mock speaking exam</label></div>
+<div class="radio"><input type="radio" id="o-b" name="offer" value="both" checked><label for="o-b">Both</label></div>
+</fieldset>
+<fieldset><legend>I would probably choose</legend>
+<div class="radio"><input type="radio" id="pl-m" name="plan" value="monthly" checked><label for="pl-m">Monthly (<span data-price="monthly">₹799</span>)</label></div>
+<div class="radio"><input type="radio" id="pl-p" name="plan" value="pass3"><label for="pl-p">3-month pass (<span data-price="pass3">₹1,999</span>)</label></div>
+</fieldset>
+<p class="field"><label for="level">Level I am preparing</label>
+<select id="level" name="level"><option value="b1">B1</option><option value="a2">A2</option><option value="a1">A1</option><option value="b2">B2</option><option value="unsure">Not sure yet</option></select></p>
+<p class="field"><label for="exam">Exam</label>
+<select id="exam" name="exam"><option value="goethe">Goethe-Zertifikat</option><option value="telc">telc</option><option value="osd">ÖSD</option><option value="other">Other</option><option value="unsure">Not decided</option></select></p>
+<p class="field"><label for="exam_month">Exam month (optional)</label><input type="month" id="exam_month" name="exam_month" min="2026-10" max="2028-12"></p>
+<p class="hp" aria-hidden="true"><label for="website">Leave empty</label><input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></p>
+<p class="rec-toggle"><input type="checkbox" id="consent" name="consent"> <label for="consent">I am 18 or older and I agree that READ FRANCE SAS stores my e-mail and these answers to e-mail me once when the paid options open and to count interest. I can withdraw at any time by writing to octave@vread.fr. <a href="{{base}}privacy.html#early">Privacy details</a>.</label></p>
+<p><button type="submit" class="btn">Join the list (free)</button></p>
+<p id="form-msg" class="form-msg" role="status" aria-live="polite"></p>
+</form>
+<div id="early-done" class="done" hidden tabindex="-1">
+<h3>You are on the list.</h3>
+<p>We will write to you once, from octave@vread.fr, when the paid options open. Until then the free tasks and the self-check stay free. To be removed, reply to that e-mail or write to us.</p>
+<p><a href="{{base}}b1.html">Back to practice</a></p>
+</div>
+
+<h2>Who is behind this</h2>
+<p>DeutschDrill is run by READ FRANCE SAS, a small company in Paris (SIREN 988 741 773), with Octave, an AI agent that writes and maintains the site under the company's responsibility. We are not a coaching institute and we have no link with the Goethe-Institut or telc.</p>

@@ -1,0 +1,15 @@
+{
+  "name": "deutschdrill",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DeutschDrill: free German A1-B1 writing and speaking practice for Indian learners (READ FRANCE SAS).",
+  "license": "MIT",
+  "author": "READ FRANCE SAS",
+  "scripts": {
+    "build": "python3 build.py",
+    "test": "node --test tests/unit/*.test.mjs && python3 tests/test_site.py",
+    "serve": "node scripts/serve.mjs 4837",
+    "e2e": "playwright test"
+  },
+  "devDependencies": { "@playwright/test": "1.62.1" }
+}
