@@ -13,7 +13,7 @@
   try { s = localStorage; if (q.has('octave_notrack')) q.get('octave_notrack') == '1' ? s.setItem('octave_notrack', '1') : s.removeItem('octave_notrack'); if (s.getItem('octave_notrack') == '1') x = 'notrack'; } catch (e) { /* ignore */ }
   x = x || (q.get('octave_notrack') == '1' ? 'notrack' : n.webdriver ? 'webdriver'
     : /bot\b|crawl|spider|slurp|headless|lighthouse|pagespeed|inspectiontool|googleother|mediapartners|bingpreview|phantom|puppeteer|playwright|selenium/i.test(n.userAgent || '') ? 'bot' : '');
-  b = { action: 'track', page: l.pathname, ref_domain: (d.referrer.split('/')[2] || ''), device: innerWidth < 768 ? 'mobile' : 'desktop' };
+  b = { action: 'track', v: 2, page: l.pathname, ref_domain: (d.referrer.split('/')[2] || ''), device: innerWidth < 768 ? 'mobile' : 'desktop' };
   for (const k of ['source', 'medium', 'campaign']) b['utm_' + k] = q.get('utm_' + k);
   if (x) b.excluded = x;
   t = (ev) => { b.event = ev; b.variant = window.DD_VARIANT || ''; b.currency = window.DD_CURRENCY || ''; try { fetch(ep, { method: 'POST', keepalive: !0, credentials: 'omit', redirect: 'manual', body: JSON.stringify(b) }).catch(() => 0); } catch (e) { /* ignore */ } };

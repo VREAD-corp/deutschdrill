@@ -32,7 +32,7 @@ const events = (r) => r.sent.map((b) => b.event);
 test('a normal visit is counted, without the user agent', () => {
   const r = run();
   assert.deepEqual(events(r), ['view', 'guide_view']);
-  assert.ok(r.sent.every((b) => !('excluded' in b)));
+  assert.ok(r.sent.every((b) => !('excluded' in b) && b.v === 2));
   assert.ok(!JSON.stringify(r.sent).includes('Chrome'));
 });
 

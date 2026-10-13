@@ -23,7 +23,8 @@ var STATS_HEADER_ = ['date', 'page', 'event', 'variant', 'currency', 'source', '
 var STATS_KEYS_ = 8;
 var EXCL_HEADER_ = ['date', 'page', 'event', 'variant', 'currency', 'reason', 'count', 'mobile', 'desktop', 'updated_at'];
 var EXCL_KEYS_ = 6;
-var EXCL_REASONS_ = ['webdriver', 'bot', 'notrack'];
+// legacy: a hit without `v` comes from a pre-2026-10-13 mesure.js, which crawlers' renderers keep cached.
+var EXCL_REASONS_ = ['webdriver', 'bot', 'notrack', 'legacy'];
 var EARLY_HEADER_ = ['at', 'email', 'level', 'exam', 'exam_month', 'offer', 'plan', 'currency', 'variant', 'price_shown', 'source', 'page', 'status'];
 var EVENTS_ = ['view', 'cta_click', 'write_start', 'check_done', 'model_open', 'speak_start', 'rec_start', 'rec_done',
   'offer_view', 'currency_switch', 'form_start', 'form_submit', 'guide_view', 'outbound_official'];
@@ -152,7 +153,7 @@ function track_(req) {
     medium: token_(req.utm_medium, 30),
     campaign: token_(req.utm_campaign, 40),
     device: req.device === 'mobile' || req.device === 'desktop' ? req.device : '',
-    reason: EXCL_REASONS_.indexOf(String(req.excluded || '')) >= 0 ? String(req.excluded) : (req.excluded ? 'bot' : '')
+    reason: EXCL_REASONS_.indexOf(String(req.excluded || '')) >= 0 ? String(req.excluded) : (req.excluded ? 'bot' : (req.v ? '' : 'legacy'))
   };
   if (!rateOk_('track', 300)) return { ok: false, error: 'rate_limited' };
   var lock = LockService.getScriptLock();

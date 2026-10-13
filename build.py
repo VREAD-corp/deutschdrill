@@ -6,6 +6,7 @@ leading HTML comment), generates the three level pages (a1/a2/b1.html), wraps ev
 layout and writes _site/ with sitemap.xml, robots.txt, 404.html and assets/data.js.
 Placeholders usable in fragments: {{base}}, {{endpoint}}, {{contact}}, {{repo_url}}, {{updated}}.
 """
+import hashlib
 import html
 import json
 import re
@@ -14,6 +15,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+# Cache-busting for mesure.js: crawlers' renderers keep an old copy of the same URL.
+MESURE_V = hashlib.sha256((ROOT / 'assets' / 'mesure.js').read_bytes()).hexdigest()[:8]
 OUT = ROOT / "_site"
 sys.path.insert(0, str(ROOT / "data"))
 from writing import WRITING  # noqa: E402
@@ -164,7 +167,7 @@ def layout(meta, body, rel):
 <link rel="icon" href="{base}assets/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="{base}assets/style.css">
 <script type="application/ld+json">{json.dumps(jsonld, ensure_ascii=False)}</script>
-<script src="{base}assets/mesure.js" defer></script>
+<script src="{base}assets/mesure.js?v={MESURE_V}" defer></script>
 {scripts}
 </head>
 <body>
