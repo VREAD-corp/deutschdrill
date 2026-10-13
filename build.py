@@ -17,6 +17,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 # Cache-busting for mesure.js: crawlers' renderers keep an old copy of the same URL.
 MESURE_V = hashlib.sha256((ROOT / 'assets' / 'mesure.js').read_bytes()).hexdigest()[:8]
+CRO_V = hashlib.sha256((ROOT / 'assets' / 'cro.js').read_bytes()).hexdigest()[:8]
+# Octave cro.js (vendored byte-identical from octave-checkout): aggregate behaviour counters + A/B variants.
+# Price test on the early-access page: one uniform draw per tab (sessionStorage), ?p=499|799 forces an arm.
+OCTAVE_XP = [{"id": "price", "variants": ["p499", "p799"], "mode": "tab", "param": "p", "pages": "early-access"}]
+# Primary CTAs for time-to-first-click: practice/early-access buttons, the form submit and the room actions.
+CRO_CTA = "[data-mesure=cta_click],#early-form button[type=submit],#check-btn,#form-check-btn,#go-btn"
 OUT = ROOT / "_site"
 sys.path.insert(0, str(ROOT / "data"))
 from writing import WRITING  # noqa: E402
@@ -167,6 +173,8 @@ def layout(meta, body, rel):
 <link rel="icon" href="{base}assets/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="{base}assets/style.css">
 <script type="application/ld+json">{json.dumps(jsonld, ensure_ascii=False)}</script>
+<script>window.OCTAVE_XP = {json.dumps(OCTAVE_XP)};</script>
+<script src="{base}assets/cro.js?v={CRO_V}" data-site="deutschdrill" data-api="{SITE['endpoint']}" data-hosts="outils.vread.fr" data-cta="{CRO_CTA}" defer></script>
 <script src="{base}assets/mesure.js?v={MESURE_V}" defer></script>
 {scripts}
 </head>
@@ -188,7 +196,7 @@ def layout(meta, body, rel):
 <p><strong>DeutschDrill</strong> is run by <strong>READ FRANCE SAS</strong> (SIREN 988 741 773, Paris, France) with Octave, an AI agent. Contact: <a href="mailto:{SITE['contact']}">{SITE['contact']}</a></p>
 <p class="disclaimer">Not affiliated with, endorsed by or connected to the Goethe-Institut or telc gGmbH. “Goethe-Zertifikat” and “telc” are their owners' marks; we name them only to describe exam formats. All tasks here are original practice material, not real exam papers.</p>
 <p><a href="{base}privacy.html">Privacy (DPDP Act and GDPR)</a> · <a href="{base}terms.html">Terms</a> · <a href="{base}legal.html">Legal notice</a> · <a href="{base}how-it-works.html">How it works and sources</a></p>
-<p class="small">No cookies. Anonymous page counts only. Your texts and recordings stay on your device.</p>
+<p class="small">No cookies. Anonymous daily totals of visits and page use only. Your texts and recordings stay on your device.</p>
 </div>
 </footer>
 </body>
@@ -226,7 +234,7 @@ def writing_card(t):
 <p class="en small">{E(t['situation_en'])}</p>
 {pts}
 <p class="task-actions"><a class="btn" href="{SITE['base']}write.html#{t['id']}" data-mesure="cta_click">Practise with timer and self-check</a></p>
-<details data-mesure-open="model_open"><summary>Model answer</summary><p class="model" lang="de">{de(t['model'])}</p>
+<details id="model-{t['id']}" data-mesure-open="model_open"><summary>Model answer</summary><p class="model" lang="de">{de(t['model'])}</p>
 <ul class="tips">{''.join('<li>' + E(x) + '</li>' for x in t['tips'])}</ul></details>
 </article>"""
 
@@ -244,7 +252,7 @@ def speaking_card(s):
 <p class="en small">{E(s['task_en'])}</p>
 <ul class="cues" lang="de">{cues}</ul>
 <p class="task-actions"><a class="btn" href="{SITE['base']}speak.html#{s['id']}" data-mesure="cta_click">Practise: timer and private recorder</a></p>
-<details data-mesure-open="model_open"><summary>Sample answer</summary><p class="model" lang="de">{de(s['model'])}</p>{fol}
+<details id="model-{s['id']}" data-mesure-open="model_open"><summary>Sample answer</summary><p class="model" lang="de">{de(s['model'])}</p>{fol}
 <ul class="tips">{''.join('<li>' + E(x) + '</li>' for x in s['tips'])}</ul></details>
 </article>"""
 
@@ -258,20 +266,20 @@ def level_page(level):
 <h1>German {level} writing and speaking practice in the exam format</h1>
 <p class="lead">{E(L['lead'])}</p>
 <p class="jump"><a href="#writing">12 writing tasks</a> · <a href="#speaking">6 speaking prompts</a> · <a href="#format">exam format and sources</a> · Goethe-Institut fee in India: <strong>{fee}</strong> incl. 18% GST (<a href="{SITE['base']}exam-day-india.html#fees">details</a>)</p>
-<h2 id="writing">12 original writing tasks</h2>
+<h2 id="writing" data-section="writing">12 original writing tasks</h2>
 <p>Each task has a timer, a live word count and a rule-based self-check. Your text never leaves your browser.</p>
 {''.join(writing_card(t) for t in w)}
-<h2 id="speaking">6 original speaking prompts</h2>
+<h2 id="speaking" data-section="speaking">6 original speaking prompts</h2>
 <p>Each prompt has a preparation timer, a speaking timer and a recorder that keeps the audio on your device. Listen back and compare with the sample answer.</p>
 {''.join(speaking_card(x) for x in s)}
-<h2 id="format">The exam format these tasks follow</h2>
+<h2 id="format" data-section="format">The exam format these tasks follow</h2>
 {table(['Writing', 'What you do', 'Scoring / time'], L['writing_rows'], 'Goethe-Zertifikat ' + level + ', writing (' + L['writing_time'] + ')')}
 {table(['Speaking', 'What you do', 'Time'], L['speaking_rows'], 'Goethe-Zertifikat ' + level + ', speaking')}
 <p>{E(L['speaking_note'])}</p>
 <p><strong>telc:</strong> {E(L['telc'])}</p>
 <p class="sources small">Sources, read on 13 October 2026: {src_links(L['sources'])}. Formats can change, so check the official page before you book.</p>
 <div class="note"><p>These are practice tasks written by DeutschDrill. They follow the published task types, timings and word counts but are not taken from any exam. For real sample papers, use the free official model tests linked above.</p></div>
-<p class="cta"><a class="btn secondary" href="{SITE['base']}early-access.html" data-mesure="cta_click">Want feedback on your writing? Join the early-access list</a></p>
+<p class="cta" data-section="early-access"><a class="btn secondary" href="{SITE['base']}early-access.html" data-mesure="cta_click">Want feedback on your writing? Join the early-access list</a></p>
 """
     meta = {"title": L["title"], "description": L["desc"], "type": "LearningResource"}
     return meta, body

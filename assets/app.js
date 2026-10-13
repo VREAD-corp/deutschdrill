@@ -1,6 +1,6 @@
 /* DeutschDrill app: writing room, speaking room, early-access form.
    Texts and recordings stay in this browser. The only network calls are the anonymous counters
-   (mesure.js) and, if you submit it, the early-access form. */
+   (mesure.js, cro.js) and, if you submit it, the early-access form. */
 (function () {
   'use strict';
   var D = window.DD || { writing: [], speaking: [] };
@@ -269,14 +269,11 @@
     p499: { inr: { monthly: '₹499', pass3: '₹1,999' }, usd: { monthly: '$6', pass3: '$24' } },
     p799: { inr: { monthly: '₹799', pass3: '₹1,999' }, usd: { monthly: '$10', pass3: '$24' } }
   };
+  // Price arm: drawn by Octave cro.js (window.OCTAVE_XP 'price': once per tab, sessionStorage, ?p=499|799 forces one).
   function variant() {
-    var v = null;
-    try { v = sessionStorage.getItem('dd-v'); } catch (e) { v = null; }
-    var q = /[?&]p=(499|799)/.exec(location.search);
-    if (q) v = 'p' + q[1];
-    if (v !== 'p499' && v !== 'p799') v = Math.random() < 0.5 ? 'p499' : 'p799';
-    try { sessionStorage.setItem('dd-v', v); } catch (e) { /* private mode */ }
-    return v;
+    try { sessionStorage.removeItem('dd-v'); } catch (e) { /* old draw key, no longer used */ }
+    var v = window.octaveCro && window.octaveCro.v('price');
+    return PRICES[v] ? v : 'p799'; // without cro.js: the price printed in the page
   }
   function earlyPage() {
     var form = $('early-form'); if (!form) return;
@@ -316,6 +313,7 @@
           if (!j.ok) throw new Error(j.error || 'error');
           form.hidden = true; $('early-done').hidden = false; $('early-done').focus();
           track('form_submit');
+          if (window.octaveCro && !body.hp) window.octaveCro.goal('waitlist');
         })
         .catch(function () { btn.disabled = false; msg.textContent = 'Sorry, that did not go through. Try again, or e-mail octave@vread.fr.'; msg.className += ' bad'; });
     };

@@ -48,6 +48,14 @@ for f in sorted(OUT.glob("*.html")):
     if "http://" in txt.replace("http://www.sitemaps.org", ""): errors.append(f"{f.name}: http:// link")
     for s in p.scripts:
         if not s.startswith(BASE): errors.append(f"{f.name}: third-party script {s}")
+    # Octave cro.js on every page, after its OCTAVE_XP config and before any script that reads the price arm
+    cro = [i for i, s in enumerate(p.scripts) if s.startswith(BASE + "assets/cro.js?v=")]
+    app = [i for i, s in enumerate(p.scripts) if s.startswith(BASE + "assets/app.js")]
+    if len(cro) != 1: errors.append(f"{f.name}: cro.js tag missing")
+    elif app and app[0] < cro[0]: errors.append(f"{f.name}: cro.js after app.js")
+    xp = txt.find("window.OCTAVE_XP = ")
+    if xp < 0 or xp > txt.find("assets/cro.js"): errors.append(f"{f.name}: OCTAVE_XP must precede cro.js")
+    if 'data-site="deutschdrill"' not in txt or 'type="module" src="/deutschdrill/assets/cro.js' in txt: errors.append(f"{f.name}: cro.js attributes")
 
 for name, (p, txt) in pages.items():
     for href in p.links:
@@ -70,6 +78,10 @@ for name, (p, _) in pages.items():
     loc = "https://outils.vread.fr" + BASE + ("" if name == "index.html" else name)
     if not p.noindex and f"<loc>{loc}</loc>" not in sm: errors.append(f"sitemap lacks {name}")
     if p.noindex and f"<loc>{loc}</loc>" in sm: errors.append(f"sitemap lists noindex {name}")
+
+if (OUT / "assets" / "cro.js").read_bytes() != (OUT.parent / "assets" / "cro.js").read_bytes(): errors.append("_site cro.js differs")
+if '"id": "price", "variants": ["p499", "p799"], "mode": "tab", "param": "p", "pages": "early-access"' not in pages["early-access.html"][1]:
+    errors.append("early-access.html: price experiment config")
 
 if errors:
     print("\n".join(errors)); sys.exit(1)

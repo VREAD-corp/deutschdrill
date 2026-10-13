@@ -11,10 +11,17 @@
  *          browsers, crawlers; the user agent itself is never sent) goes to the `Exclus` tab by reason instead.
  *   {action:'early', email, level, exam, exam_month, offer, plan, currency, variant, consent, hp, page, utm_source}
  *       -> one row in `EarlyAccess`. Nothing is charged: early-access list only, no payment exists.
+ *   {action:'track', kind:'cro', v:2, site, page, device, e:[[type,key,val]…]}   (Octave cro.js, also ?action=track)
+ *       -> Cro.js (vendored byte-identical from octave-checkout): daily behaviour counters (`Comportement`) and
+ *          A/B results per variant (`Experiences`). Checked before the host's own track validation.
+ *   {action:'cro', key, days|from,to}   -> aggregated CRO summary (key: SHA-256 in Script Property CRO_KEY_SHA256).
+ *   {action:'cro_init', key}            -> stores that SHA-256 once (POST only).
+ * `action` is read from the JSON body, else from the query string.
  * GET ?action=ping            -> {ok:true}
  * GET ?action=init            -> first call creates the tabs and returns the stats key once.
- * GET ?action=stats&key=...   -> one day's counters, excluded counters, views counted/excluded/raw and
- *                                early-access count (key in Script Properties).
+ * GET ?action=stats&key=...   -> one day's counters, excluded counters, views counted/excluded/raw,
+ *                                early-access count and `cro` (croSummary_ of that day) (key in Script Properties).
+ * GET ?action=cro&key=...     -> same as POST action=cro.
  */
 
 var SITE_ = 'deutschdrill';
@@ -43,6 +50,14 @@ var PRICES_ = {
 var EMAIL_RE_ = /^[^\s@<>()",;:]{1,64}@[A-Za-z0-9.-]{1,253}\.[A-Za-z]{2,}$/;
 var OWN_HOSTS_ = ['outils.vread.fr', 'vread-corp.github.io'];
 
+/* Octave CRO (Cro.js): accepted sites, A/B whitelist (same ids/variants as OCTAVE_XP in build.py), date zone. */
+var CRO_SITES_ = ['deutschdrill'];
+var CRO_EXPERIMENTS_ = { price: ['p499', 'p799'] };
+var CRO_TZ_ = TZ_;
+function croBook_() { return SpreadsheetApp.getActive(); }
+/** Same page names as the `Stats` tab (unknown paths fold into "(other)"). */
+function croPage_(site, p) { return page_(p); }
+
 function doGet(e) {
   var p = (e && e.parameter) || {};
   try {
@@ -51,6 +66,7 @@ function doGet(e) {
       if (props.getProperty('STATS_KEY')) return json_({ ok: true, already: true });
       return json_({ ok: true, key: setup() });
     }
+    if (p.action === 'cro') return json_(croAction_(p));
     if (p.action === 'stats') {
       var key = PropertiesService.getScriptProperties().getProperty('STATS_KEY');
       if (!key || p.key !== key) return json_({ ok: false, error: 'forbidden' });
@@ -61,7 +77,7 @@ function doGet(e) {
       var byReason = {};
       excluded.forEach(function (r) { if (r.event === 'view') byReason[r.reason] = (byReason[r.reason] || 0) + r.count; });
       return json_({ ok: true, date: d, views: { counted: views(rows), excluded: views(excluded), raw: views(rows) + views(excluded), excluded_by_reason: byReason },
-        rows: rows, excluded: excluded, early: earlyCount_() });
+        rows: rows, excluded: excluded, early: earlyCount_(), cro: croSummary_(d, d) });
     }
     return json_({ ok: true, service: SITE_ });
   } catch (err) {
@@ -78,9 +94,13 @@ function doPost(e) {
     return json_({ ok: false, error: 'bad_json' });
   }
   if (!body || typeof body !== 'object') return json_({ ok: false, error: 'bad_json' });
+  var action = String(body.action || (e && e.parameter && e.parameter.action) || '');
   try {
-    if (body.action === 'track') return json_(track_(body));
-    if (body.action === 'early') return json_(early_(body));
+    if (action === 'track' && body.kind === 'cro') return json_(croTrack_(body));
+    if (action === 'cro') return json_(croAction_(body));
+    if (action === 'cro_init') return json_(croInit_(body));
+    if (action === 'track') return json_(track_(body));
+    if (action === 'early') return json_(early_(body));
     return json_({ ok: false, error: 'unknown_action' });
   } catch (err) {
     if (err && err.user) return json_({ ok: false, error: err.code });

@@ -25,6 +25,7 @@ jobs:
       - run: python build.py
       - run: python tests/test_site.py
       - run: node --test tests/unit/*.test.mjs
+      - run: node tests/cro/cro.check.mjs assets/cro.js && node tests/cro/cro-gas.check.mjs gas/src/Cro.js
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
         with:

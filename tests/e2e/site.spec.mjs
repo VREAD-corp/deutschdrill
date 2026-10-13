@@ -104,8 +104,9 @@ test('early access: price arm, currency switch, consent required, posts to own e
     if (body.includes('"action":"early"')) posted = JSON.parse(body);
     await route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
   });
-  await page.goto('early-access.html?p=499&utm_source=e2e-test');
+  await page.goto('early-access.html?p=499&utm_source=e2e-test&octave_notrack=1');
   await expect(page.locator('.price .amount').first()).toHaveText('₹499');
+  await expect(page.locator('html')).toHaveAttribute('data-xp-price', 'p499');
   await page.locator('[data-cur=usd]').click();
   await expect(page.locator('.price .amount').first()).toHaveText('$6');
   await expect(page.locator('.price .amount').nth(1)).toHaveText('$24');
@@ -121,4 +122,33 @@ test('early access: price arm, currency switch, consent required, posts to own e
   await expect(page.locator('#early-done')).toBeVisible();
   expect(posted).toMatchObject({ action: 'early', email: 'learner@example.com', variant: 'p499', currency: 'usd', plan: 'pass3', offer: 'both', consent: true });
   await shot(page, 'early-done', info);
+});
+
+test('price A/B runs on Octave cro.js: forced ?p=799, per-tab draw, prices match the arm, nothing sent', async ({ page }) => {
+  const cro = [];
+  page.on('request', (r) => { if (/script\.google\.com/.test(r.url()) && (r.postData() || '').includes('"kind":"cro"')) cro.push(r.url()); });
+  await page.addInitScript(() => sessionStorage.setItem('dd-v', 'p499')); // old draw key: ignored and removed
+  await page.goto('early-access.html?p=799&octave_notrack=1');
+  await expect(page.locator('script[src*="assets/cro.js"][data-site="deutschdrill"]')).toHaveCount(1);
+  await expect(page.locator('html')).toHaveAttribute('data-xp-price', 'p799');
+  await expect(page.locator('.price .amount').first()).toHaveText('₹799');
+  await expect(page.locator('#pl-m [data-price=monthly], label[for=pl-m] [data-price=monthly]')).toHaveText('₹799');
+  expect(await page.evaluate(() => [window.octaveCro.v('price'), window.DD_VARIANT, sessionStorage.getItem('oxp_price'), sessionStorage.getItem('dd-v')]))
+    .toEqual(['p799', 'p799', 'p799', null]);
+  await page.locator('[data-cur=usd]').click();
+  await expect(page.locator('.price .amount').first()).toHaveText('$10');
+  // same tab, no parameter: the arm is kept (sessionStorage), on other pages too
+  await page.goto('early-access.html?octave_notrack=1');
+  await expect(page.locator('.price .amount').first()).toHaveText('₹799');
+  // a fresh tab draws one of the two arms and shows its price
+  const fresh = await page.context().newPage();
+  await fresh.goto('early-access.html?octave_notrack=1');
+  const v = await fresh.evaluate(() => window.octaveCro.v('price'));
+  expect(['p499', 'p799']).toContain(v);
+  await expect(fresh.locator('.price .amount').first()).toHaveText(v === 'p499' ? '₹499' : '₹799');
+  await fresh.close();
+  await page.goto('b1.html?octave_notrack=1');
+  expect(await page.evaluate(() => window.octaveCro.v('price'))).toBe('p799');
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  expect(cro, 'octave_notrack=1 / webdriver: cro.js sends nothing').toEqual([]);
 });
