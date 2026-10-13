@@ -7,17 +7,23 @@
  *   {action:'track', event, page, variant, currency, device, ref_domain, utm_source, utm_medium, utm_campaign}
  *       -> daily counters in the `Stats` tab. No IP (Apps Script never sees it), no user agent, no cookie,
  *          no identifier: whitelisted fields only, one counter row per day x page x event x variant x source.
+ *          A hit with `excluded` (webdriver | bot | notrack, decided in the browser: our tests, automated
+ *          browsers, crawlers; the user agent itself is never sent) goes to the `Exclus` tab by reason instead.
  *   {action:'early', email, level, exam, exam_month, offer, plan, currency, variant, consent, hp, page, utm_source}
  *       -> one row in `EarlyAccess`. Nothing is charged: early-access list only, no payment exists.
  * GET ?action=ping            -> {ok:true}
  * GET ?action=init            -> first call creates the tabs and returns the stats key once.
- * GET ?action=stats&key=...   -> one day's counters + early-access count (key in Script Properties).
+ * GET ?action=stats&key=...   -> one day's counters, excluded counters, views counted/excluded/raw and
+ *                                early-access count (key in Script Properties).
  */
 
 var SITE_ = 'deutschdrill';
 var TZ_ = 'Asia/Kolkata';
 var STATS_HEADER_ = ['date', 'page', 'event', 'variant', 'currency', 'source', 'medium', 'campaign', 'count', 'mobile', 'desktop', 'updated_at'];
 var STATS_KEYS_ = 8;
+var EXCL_HEADER_ = ['date', 'page', 'event', 'variant', 'currency', 'reason', 'count', 'mobile', 'desktop', 'updated_at'];
+var EXCL_KEYS_ = 6;
+var EXCL_REASONS_ = ['webdriver', 'bot', 'notrack'];
 var EARLY_HEADER_ = ['at', 'email', 'level', 'exam', 'exam_month', 'offer', 'plan', 'currency', 'variant', 'price_shown', 'source', 'page', 'status'];
 var EVENTS_ = ['view', 'cta_click', 'write_start', 'check_done', 'model_open', 'speak_start', 'rec_start', 'rec_done',
   'offer_view', 'currency_switch', 'form_start', 'form_submit', 'guide_view', 'outbound_official'];
@@ -48,7 +54,13 @@ function doGet(e) {
       var key = PropertiesService.getScriptProperties().getProperty('STATS_KEY');
       if (!key || p.key !== key) return json_({ ok: false, error: 'forbidden' });
       var d = /^\d{4}-\d{2}-\d{2}$/.test(p.date || '') ? p.date : today_();
-      return json_({ ok: true, date: d, rows: statsOfDay_(d), early: earlyCount_() });
+      var rows = statsOfDay_(d, 'Stats', STATS_HEADER_, STATS_KEYS_);
+      var excluded = statsOfDay_(d, 'Exclus', EXCL_HEADER_, EXCL_KEYS_);
+      var views = function (rs) { return rs.reduce(function (a, r) { return a + (r.event === 'view' ? r.count : 0); }, 0); };
+      var byReason = {};
+      excluded.forEach(function (r) { if (r.event === 'view') byReason[r.reason] = (byReason[r.reason] || 0) + r.count; });
+      return json_({ ok: true, date: d, views: { counted: views(rows), excluded: views(excluded), raw: views(rows) + views(excluded), excluded_by_reason: byReason },
+        rows: rows, excluded: excluded, early: earlyCount_() });
     }
     return json_({ ok: true, service: SITE_ });
   } catch (err) {
@@ -79,6 +91,7 @@ function doPost(e) {
 /** Creates the tabs and a random stats key. Run once (also reachable via ?action=init on first call). */
 function setup() {
   tab_('Stats', STATS_HEADER_);
+  tab_('Exclus', EXCL_HEADER_);
   tab_('EarlyAccess', EARLY_HEADER_);
   var key = Utilities.getUuid().replace(/-/g, '');
   PropertiesService.getScriptProperties().setProperty('STATS_KEY', key);
@@ -138,50 +151,58 @@ function track_(req) {
     source: token_(req.utm_source, 40) || ref || '(direct)',
     medium: token_(req.utm_medium, 30),
     campaign: token_(req.utm_campaign, 40),
-    device: req.device === 'mobile' || req.device === 'desktop' ? req.device : ''
+    device: req.device === 'mobile' || req.device === 'desktop' ? req.device : '',
+    reason: EXCL_REASONS_.indexOf(String(req.excluded || '')) >= 0 ? String(req.excluded) : (req.excluded ? 'bot' : '')
   };
   if (!rateOk_('track', 300)) return { ok: false, error: 'rate_limited' };
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(25000)) return { ok: false, error: "busy" };
-  try { increment_(hit); } finally { lock.releaseLock(); }
+  try {
+    if (hit.reason) incrementRow_('Exclus', EXCL_HEADER_, EXCL_KEYS_, [hit.date, hit.page, hit.event, hit.variant, hit.currency, hit.reason], hit.device);
+    else increment_(hit);
+  } finally { lock.releaseLock(); }
   return { ok: true };
 }
 
 function increment_(h) {
-  var sh = tab_('Stats', STATS_HEADER_);
-  var keyCells = [h.date, h.page, h.event, h.variant, h.currency, h.source, h.medium, h.campaign];
+  incrementRow_('Stats', STATS_HEADER_, STATS_KEYS_, [h.date, h.page, h.event, h.variant, h.currency, h.source, h.medium, h.campaign], h.device);
+}
+
+/** Daily counter row `keyCells` (date first) in tab `name`: incremented, or appended. Caller holds the lock. */
+function incrementRow_(name, header, nKeys, keyCells, device) {
+  var sh = tab_(name, header);
   var key = keyCells.join('\u001f');
   var last = sh.getLastRow();
   var n = Math.min(Math.max(last - 1, 0), 3000);
   var rowNum = 0;
   if (n > 0) {
-    var vals = sh.getRange(last - n + 1, 1, n, STATS_KEYS_).getDisplayValues();
+    var vals = sh.getRange(last - n + 1, 1, n, nKeys).getDisplayValues();
     for (var i = vals.length - 1; i >= 0; i--) {
-      if (vals[i][0] < h.date) break;
+      if (vals[i][0] < keyCells[0]) break;
       if (vals[i].join('\u001f') === key) { rowNum = last - n + 1 + i; break; }
     }
   }
   var now = new Date().toISOString();
   if (!rowNum) {
-    sh.appendRow(keyCells.map(txt_).concat([1, h.device === 'mobile' ? 1 : 0, h.device === 'desktop' ? 1 : 0, now]));
+    sh.appendRow(keyCells.map(txt_).concat([1, device === 'mobile' ? 1 : 0, device === 'desktop' ? 1 : 0, now]));
   } else {
-    var r = sh.getRange(rowNum, STATS_KEYS_ + 1, 1, 4);
+    var r = sh.getRange(rowNum, nKeys + 1, 1, 4);
     var c = r.getValues()[0];
-    r.setValues([[Number(c[0] || 0) + 1, Number(c[1] || 0) + (h.device === 'mobile' ? 1 : 0), Number(c[2] || 0) + (h.device === 'desktop' ? 1 : 0), now]]);
+    r.setValues([[Number(c[0] || 0) + 1, Number(c[1] || 0) + (device === 'mobile' ? 1 : 0), Number(c[2] || 0) + (device === 'desktop' ? 1 : 0), now]]);
   }
 }
 
-function statsOfDay_(date) {
-  var sh = tab_('Stats', STATS_HEADER_);
+function statsOfDay_(date, name, header, nKeys) {
+  var sh = tab_(name, header);
   var last = sh.getLastRow();
   if (last < 2) return [];
   var n = Math.min(last - 1, 3000);
-  var vals = sh.getRange(last - n + 1, 1, n, STATS_HEADER_.length).getDisplayValues();
+  var vals = sh.getRange(last - n + 1, 1, n, header.length).getDisplayValues();
   var out = [];
   for (var i = 0; i < vals.length; i++) {
     if (vals[i][0] !== date) continue;
     var o = {};
-    STATS_HEADER_.forEach(function (k, j) { o[k] = j >= STATS_KEYS_ && j < STATS_KEYS_ + 3 ? Number(vals[i][j]) : vals[i][j]; });
+    header.forEach(function (k, j) { o[k] = j >= nKeys && j < nKeys + 3 ? Number(vals[i][j]) : vals[i][j]; });
     out.push(o);
   }
   return out;

@@ -4,7 +4,9 @@ import fs from 'node:fs';
 const SHOTS = process.env.SHOTS_DIR || 'shots';
 fs.mkdirSync(SHOTS, { recursive: true });
 const shot = (page, name, info, full = true) => page.screenshot({ path: `${SHOTS}/${name}-${info.project.name}.png`, fullPage: full });
-const Q = '?utm_source=e2e-test';
+const Q = '?utm_source=e2e-test&octave_notrack=1';
+// Our runs never count as visits: octave_notrack=1 (remembered in localStorage) sends them to the "Exclus" counters.
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => localStorage.setItem('octave_notrack', '1')); });
 const PAGES = ['', 'a1.html', 'a2.html', 'b1.html', 'write.html', 'speak.html', 'exam-day-india.html', 'early-access.html', 'how-it-works.html', 'privacy.html', 'terms.html', 'legal.html'];
 
 test('every page: footer identity, disclaimer, no horizontal scroll, no console errors', async ({ page }, info) => {
