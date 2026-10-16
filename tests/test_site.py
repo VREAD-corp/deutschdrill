@@ -12,7 +12,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 OUT = Path(__file__).resolve().parent.parent / "_site"
-BASE = "/deutschdrill/"
+BASE = "/"
 errors = []
 
 
@@ -42,7 +42,7 @@ for f in sorted(OUT.glob("*.html")):
     if p.h1 != 1: errors.append(f"{f.name}: {p.h1} h1")
     if not p.desc or len(p.desc) > 200: errors.append(f"{f.name}: description missing or > 200 chars ({len(p.desc or '')})")
     if not p.canon: errors.append(f"{f.name}: canonical")
-    for k in ("988 741 773", "octave@vread.fr", "Not affiliated with", "READ FRANCE SAS"):
+    for k in ("A Jalonel brand", "https://jalonel.com/en/", "octave@vread.fr", "Not affiliated with"):
         if k not in txt: errors.append(f"{f.name}: footer lacks {k}")
     if re.search(r"official partner|authori[sz]ed by goethe|in cooperation with goethe|goethe-approved", txt, re.I): errors.append(f"{f.name}: affiliation wording")
     if "http://" in txt.replace("http://www.sitemaps.org", ""): errors.append(f"{f.name}: http:// link")
@@ -55,7 +55,7 @@ for f in sorted(OUT.glob("*.html")):
     elif app and app[0] < cro[0]: errors.append(f"{f.name}: cro.js after app.js")
     xp = txt.find("window.OCTAVE_XP = ")
     if xp < 0 or xp > txt.find("assets/cro.js"): errors.append(f"{f.name}: OCTAVE_XP must precede cro.js")
-    if 'data-site="deutschdrill"' not in txt or 'type="module" src="/deutschdrill/assets/cro.js' in txt: errors.append(f"{f.name}: cro.js attributes")
+    if 'data-site="deutschdrill"' not in txt or 'type="module" src="/assets/cro.js' in txt or 'data-hosts="deutschdrill.jalonel.com outils.vread.fr"' not in txt: errors.append(f"{f.name}: cro.js attributes")
 
 for name, (p, txt) in pages.items():
     for href in p.links:
@@ -75,7 +75,7 @@ for name, (p, txt) in pages.items():
 
 sm = (OUT / "sitemap.xml").read_text()
 for name, (p, _) in pages.items():
-    loc = "https://outils.vread.fr" + BASE + ("" if name == "index.html" else name)
+    loc = "https://deutschdrill.jalonel.com" + BASE + ("" if name == "index.html" else name)
     if not p.noindex and f"<loc>{loc}</loc>" not in sm: errors.append(f"sitemap lacks {name}")
     if p.noindex and f"<loc>{loc}</loc>" in sm: errors.append(f"sitemap lists noindex {name}")
 

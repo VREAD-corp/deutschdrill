@@ -16,8 +16,8 @@ test('every page: footer identity, disclaimer, no horizontal scroll, no console 
   for (const p of PAGES) {
     await page.goto(p + Q);
     expect(await page.evaluate(() => document.documentElement.scrollWidth), p).toBeLessThanOrEqual(page.viewportSize().width);
-    await expect(page.locator('footer')).toContainText('READ FRANCE SAS');
-    await expect(page.locator('footer')).toContainText('988 741 773');
+    await expect(page.locator('footer')).toContainText('A Jalonel brand');
+    await expect(page.locator('footer a[href="https://jalonel.com/en/"]')).toHaveCount(1);
     await expect(page.locator('footer')).toContainText('octave@vread.fr');
     await expect(page.locator('footer .disclaimer')).toContainText('Not affiliated with');
     await expect(page.locator('h1')).toHaveCount(1);
@@ -74,7 +74,7 @@ test('speaking room: timers and local recording, nothing uploaded', async ({ pag
   page.on('request', (r) => {
     const u = r.url();
     if (u.startsWith('http://localhost') || u.startsWith('blob:') || u.startsWith('data:') || u.startsWith(page.context()._options?.baseURL || '~')) return;
-    if (u.startsWith('https://outils.vread.fr/')) return; // same origin (live run)
+    if (u.startsWith('https://deutschdrill.jalonel.com/')) return; // same origin (live run)
     const body = r.postData() || '';
     // the only allowed outbound call is the anonymous counter: tiny JSON with action "track", never audio
     if (/script\.google\.com\/macros/.test(u) && body.includes('"action":"track"') && body.length < 800) return;

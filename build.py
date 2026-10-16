@@ -29,6 +29,9 @@ from writing import WRITING  # noqa: E402
 from speaking import SPEAKING  # noqa: E402
 
 E = html.escape
+# Brand: Jalonel, a brand of READ FRANCE SAS (the legal operator, named on the legal notice, terms and privacy pages).
+JALONEL_ORG = {"@type": "Organization", "@id": "https://jalonel.com/#org", "name": "Jalonel", "url": "https://jalonel.com/",
+               "parentOrganization": {"@type": "Organization", "name": "READ FRANCE SAS", "identifier": "SIREN 988741773"}}
 SITE = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))
 SITE["repo_url"] = "https://github.com/" + SITE["repo"]
 
@@ -149,7 +152,7 @@ def layout(meta, body, rel):
         "@context": "https://schema.org", "@type": meta.get("type", "WebPage"), "name": title,
         "description": meta["description"], "url": page_url, "inLanguage": "en-IN",
         "isAccessibleForFree": True, "dateModified": meta.get("updated", SITE["updated"]),
-        "publisher": {"@type": "Organization", "name": "READ FRANCE SAS", "url": SITE["repo_url"]},
+        "publisher": JALONEL_ORG,
     }
     robots = '\n<meta name="robots" content="noindex">' if meta.get("noindex") == "yes" else ""
     scripts = SCRIPTS.format(base=base) if meta.get("app") == "yes" else ""
@@ -174,7 +177,7 @@ def layout(meta, body, rel):
 <link rel="stylesheet" href="{base}assets/style.css">
 <script type="application/ld+json">{json.dumps(jsonld, ensure_ascii=False)}</script>
 <script>window.OCTAVE_XP = {json.dumps(OCTAVE_XP)};</script>
-<script src="{base}assets/cro.js?v={CRO_V}" data-site="deutschdrill" data-api="{SITE['endpoint']}" data-hosts="outils.vread.fr" data-cta="{CRO_CTA}" defer></script>
+<script src="{base}assets/cro.js?v={CRO_V}" data-site="deutschdrill" data-api="{SITE['endpoint']}" data-hosts="deutschdrill.jalonel.com outils.vread.fr" data-cta="{CRO_CTA}" defer></script>
 <script src="{base}assets/mesure.js?v={MESURE_V}" defer></script>
 {scripts}
 </head>
@@ -193,7 +196,7 @@ def layout(meta, body, rel):
 </main>
 <footer class="site-footer">
 <div class="wrap">
-<p><strong>DeutschDrill</strong> is run by <strong>READ FRANCE SAS</strong> (SIREN 988 741 773, Paris, France) with Octave, an AI agent. Contact: <a href="mailto:{SITE['contact']}">{SITE['contact']}</a></p>
+<p><strong>DeutschDrill</strong> · <a href="https://jalonel.com/en/">A Jalonel brand</a> · Contact: <a href="mailto:{SITE['contact']}">{SITE['contact']}</a></p>
 <p class="disclaimer">Not affiliated with, endorsed by or connected to the Goethe-Institut or telc gGmbH. “Goethe-Zertifikat” and “telc” are their owners' marks; we name them only to describe exam formats. All tasks here are original practice material, not real exam papers.</p>
 <p><a href="{base}privacy.html">Privacy (DPDP Act and GDPR)</a> · <a href="{base}terms.html">Terms</a> · <a href="{base}legal.html">Legal notice</a> · <a href="{base}how-it-works.html">How it works and sources</a></p>
 <p class="small">No cookies. Anonymous daily totals of visits and page use only. Your texts and recordings stay on your device.</p>
@@ -312,8 +315,10 @@ def main():
     (OUT / "sitemap.xml").write_text("\n".join(sm) + "\n", encoding="utf-8")
     (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {SITE['origin']}{SITE['base']}sitemap.xml\n", encoding="utf-8")
     (OUT / ".nojekyll").write_text("", encoding="utf-8")
-    key = (ROOT / "indexnow.key").read_text().strip() if (ROOT / "indexnow.key").exists() else ""
-    if key:
+    (OUT / "CNAME").write_text(SITE["origin"].split("//", 1)[1] + "\n", encoding="utf-8")
+    # IndexNow key files: the first line of indexnow.key is the current key, later lines are older keys kept published.
+    keys = (ROOT / "indexnow.key").read_text().split() if (ROOT / "indexnow.key").exists() else []
+    for key in keys:
         (OUT / f"{key}.txt").write_text(key, encoding="utf-8")
     print(f"built {len(items)} pages into {OUT}")
 

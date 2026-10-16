@@ -9,7 +9,7 @@ const src = fs.readFileSync(new URL('../../assets/mesure.js', import.meta.url), 
 const CHROME = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36';
 const GOOGLEBOT = 'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.7390.0 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
 
-function run({ ua = CHROME, webdriver = false, search = '', store = {}, prerendering = false, visibility = 'visible', dnt = '' } = {}) {
+function run({ ua = CHROME, webdriver = false, search = '', store = {}, prerendering = false, visibility = 'visible', dnt = '', hostname = 'deutschdrill.jalonel.com', pathname = '/exam-day-india.html' } = {}) {
   const sent = [], listeners = {};
   const doc = {
     referrer: 'https://www.google.com/', prerendering, visibilityState: visibility,
@@ -18,7 +18,7 @@ function run({ ua = CHROME, webdriver = false, search = '', store = {}, prerende
   const ls = { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: (k) => { delete store[k]; } };
   const ctx = {
     navigator: { userAgent: ua, webdriver, doNotTrack: dnt }, document: doc, localStorage: ls, innerWidth: 1200, URLSearchParams, JSON,
-    location: { hostname: 'outils.vread.fr', pathname: '/deutschdrill/exam-day-india.html', search },
+    location: { hostname, pathname, search },
     fetch: (u, o) => { sent.push(JSON.parse(o.body)); assert.equal(o.credentials, 'omit'); return Promise.resolve(); },
   };
   ctx.window = ctx;
@@ -62,4 +62,11 @@ test('Do Not Track sends nothing; prerendered pages count only once opened', () 
   assert.equal(r.sent.length, 0);
   r.doc.visibilityState = 'visible'; r.fire('visibilitychange'); r.fire('visibilitychange');
   assert.equal(events(r).filter((e) => e === 'view').length, 1);
+});
+
+test('only our hosts count: deutschdrill.jalonel.com, and the old outils.vread.fr/deutschdrill/ path', () => {
+  assert.deepEqual(events(run({ hostname: 'outils.vread.fr', pathname: '/deutschdrill/exam-day-india.html' })), ['view', 'guide_view']);
+  assert.deepEqual(run({ hostname: 'outils.vread.fr', pathname: '/other-site/' }).sent, []);
+  assert.deepEqual(run({ hostname: 'localhost', pathname: '/exam-day-india.html' }).sent, []);
+  assert.equal(run().sent[0].page, '/exam-day-india.html');
 });

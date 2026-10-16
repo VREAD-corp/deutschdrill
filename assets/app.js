@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var D = window.DD || { writing: [], speaking: [] };
-  var BASE = '/deutschdrill/';
+  var BASE = '/';
   var $ = function (id) { return document.getElementById(id); };
   var track = function (ev, extra) { if (window.ddTrack) window.ddTrack(ev, extra); };
   function el(tag, attrs, text) {

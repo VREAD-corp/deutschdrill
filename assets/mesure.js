@@ -8,7 +8,7 @@
 ((n, l, d) => {
   let ep = 'https://script.google.com/macros/s/AKfycbwYciG66y1Cc4kndgN7Zc71rnzKngdZsOYvK96VUPZqxiPDKW4DuSuYEoI-61Wwyv36/exec', q = new URLSearchParams(l.search), b, t;
   window.ddTrack = () => {};
-  if (n.doNotTrack == '1' || n.globalPrivacyControl || l.hostname != 'outils.vread.fr' || !l.pathname.startsWith('/deutschdrill/')) return;
+  if (n.doNotTrack == '1' || n.globalPrivacyControl || (l.hostname != 'deutschdrill.jalonel.com' && (l.hostname != 'outils.vread.fr' || !l.pathname.startsWith('/deutschdrill/')))) return;
   let x = '', s;
   try { s = localStorage; if (q.has('octave_notrack')) q.get('octave_notrack') == '1' ? s.setItem('octave_notrack', '1') : s.removeItem('octave_notrack'); if (s.getItem('octave_notrack') == '1') x = 'notrack'; } catch (e) { /* ignore */ }
   x = x || (q.get('octave_notrack') == '1' ? 'notrack' : n.webdriver ? 'webdriver'

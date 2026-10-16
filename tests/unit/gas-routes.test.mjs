@@ -37,6 +37,8 @@ test('host settings: site, experiment whitelist and page names of the Stats tab'
   assert.equal(ctx.CRO_TZ_, 'Asia/Kolkata');
   assert.equal(ctx.croPageOf_('deutschdrill', '/deutschdrill/early-access.html?p=499'), '/early-access.html');
   assert.equal(ctx.croPageOf_('deutschdrill', '/deutschdrill/'), '/');
+  assert.equal(ctx.croPageOf_('deutschdrill', '/early-access.html?p=499'), '/early-access.html');
+  assert.equal(ctx.croPageOf_('deutschdrill', '/'), '/');
   assert.equal(ctx.croPageOf_('deutschdrill', '/deutschdrill/wp-admin.php'), '(other)');
   const b = ctx.croValidate_({ site: 'deutschdrill', v: 2, page: '/deutschdrill/early-access.html', device: 'mobile',
     e: [['pv', '', ''], ['xp', 'price', 'p499.n'], ['xp', 'price', 'p799.waitlist'], ['xp', 'price', 'p999.n'], ['xp', 'other', 'a.n']] });

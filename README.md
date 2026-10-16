@@ -1,6 +1,6 @@
 # DeutschDrill: free German A1–B1 writing and speaking practice (India)
 
-Live: https://outils.vread.fr/deutschdrill/ · Venture AS-IN-06 of READ FRANCE SAS (Octave global ventures).
+Live: https://deutschdrill.jalonel.com/ (brand Jalonel, a brand of READ FRANCE SAS; moved from outils.vread.fr/deutschdrill/ on 2026-10-16, old URLs redirect) · Venture AS-IN-06 of READ FRANCE SAS (Octave global ventures).
 
 - 36 original writing tasks (12 per level) with model answers and a rule-based self-check (`assets/check.js`): word count, greeting/closing and du/Sie, content-point hints, connectors, 17 error patterns common for Indian learners, manual checklist.
 - 18 original speaking prompts (6 per level) with preparation/speaking timers and a MediaRecorder recorder. Audio stays in the tab; it is never uploaded.
@@ -19,7 +19,7 @@ Live: https://outils.vread.fr/deutschdrill/ · Venture AS-IN-06 of READ FRANCE S
 ```sh
 python3 build.py && npm test            # unit + vendored cro checks + static site checks
 npm i && npx playwright test            # e2e at 390 px and 1440 px, screenshots in shots/
-BASE_URL=https://outils.vread.fr/deutschdrill/ npx playwright test   # against the live site
+BASE_URL=https://deutschdrill.jalonel.com/ npx playwright test   # against the live site
 node scripts/indexnow.mjs               # ping IndexNow with every sitemap URL
 ```
 
