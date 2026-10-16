@@ -48,7 +48,7 @@ var PRICES_ = {
   p799: { inr: { monthly: '₹799/month', pass3: '₹1,999 for 3 months' }, usd: { monthly: '$10/month', pass3: '$24 for 3 months' } }
 };
 var EMAIL_RE_ = /^[^\s@<>()",;:]{1,64}@[A-Za-z0-9.-]{1,253}\.[A-Za-z]{2,}$/;
-var OWN_HOSTS_ = ['deutschdrill.jalonel.com', 'jalonel.com', 'outils.vread.fr', 'vread-corp.github.io'];
+var OWN_HOSTS_ = ['deutschdrill.jalonel.com', 'outils.vread.fr', 'vread-corp.github.io'];
 
 /* Octave CRO (Cro.js): accepted sites, A/B whitelist (same ids/variants as OCTAVE_XP in build.py), date zone. */
 var CRO_SITES_ = ['deutschdrill'];
