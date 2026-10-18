@@ -1,7 +1,7 @@
 /**
  * DeutschDrill backend: a Google Apps Script web app bound to its own Sheet.
  * Operator: READ FRANCE SAS (SIREN 988 741 773, Paris), run by Octave, an AI agent.
- * Separate from octave-checkout and from the Vread app: own script, own Sheet, own deployment.
+ * Separate from octave-checkout and from the other apps: own script, own Sheet, own deployment.
  *
  * POST text/plain JSON (no CORS preflight):
  *   {action:'track', event, page, variant, currency, device, ref_domain, utm_source, utm_medium, utm_campaign}
@@ -48,7 +48,7 @@ var PRICES_ = {
   p799: { inr: { monthly: '₹799/month', pass3: '₹1,999 for 3 months' }, usd: { monthly: '$10/month', pass3: '$24 for 3 months' } }
 };
 var EMAIL_RE_ = /^[^\s@<>()",;:]{1,64}@[A-Za-z0-9.-]{1,253}\.[A-Za-z]{2,}$/;
-var OWN_HOSTS_ = ['deutschdrill.jalonel.com', 'outils.vread.fr', 'vread-corp.github.io'];
+var OWN_HOSTS_ = ['deutschdrill.jalonel.com'];
 
 /* Octave CRO (Cro.js): accepted sites, A/B whitelist (same ids/variants as OCTAVE_XP in build.py), date zone. */
 var CRO_SITES_ = ['deutschdrill'];
