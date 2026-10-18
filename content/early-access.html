@@ -28,7 +28,7 @@ app: yes
 <section class="price"><h3>Monthly</h3><p><span class="amount" data-price="monthly">₹799</span> per month</p><p class="small">Both options, cancel any month.</p></section>
 <section class="price"><h3>Exam pass</h3><p><span class="amount" data-price="pass3">₹1,999</span> for 3 months</p><p class="small">Both options, one payment, no renewal.</p></section>
 </div>
-<p class="small">Different visitors may see different monthly prices: we are testing what feels fair. Whatever you see here is not an offer; the final price will be in the opening e-mail.</p>
+<p class="small">Different visitors may see different monthly prices: we are testing what feels fair. Whatever you see here is not an offer; the final price, and whether GST is added to it, will be in the opening e-mail.</p>
 
 <h2 id="join" data-section="join">Join the early-access list</h2>
 <form id="early-form" novalidate>
@@ -42,11 +42,13 @@ app: yes
 <div class="radio"><input type="radio" id="pl-m" name="plan" value="monthly" checked><label for="pl-m">Monthly (<span data-price="monthly">₹799</span>)</label></div>
 <div class="radio"><input type="radio" id="pl-p" name="plan" value="pass3"><label for="pl-p">3-month pass (<span data-price="pass3">₹1,999</span>)</label></div>
 </fieldset>
+<details class="more-fields"><summary>Add your level and exam date (optional)</summary>
 <p class="field"><label for="level">Level I am preparing</label>
-<select id="level" name="level"><option value="b1">B1</option><option value="a2">A2</option><option value="a1">A1</option><option value="b2">B2</option><option value="unsure">Not sure yet</option></select></p>
+<select id="level" name="level"><option value="">Choose</option><option value="b1">B1</option><option value="a2">A2</option><option value="a1">A1</option><option value="b2">B2</option><option value="unsure">Not sure yet</option></select></p>
 <p class="field"><label for="exam">Exam</label>
-<select id="exam" name="exam"><option value="goethe">Goethe-Zertifikat</option><option value="telc">telc</option><option value="osd">ÖSD</option><option value="other">Other</option><option value="unsure">Not decided</option></select></p>
+<select id="exam" name="exam"><option value="">Choose</option><option value="goethe">Goethe-Zertifikat</option><option value="telc">telc</option><option value="osd">ÖSD</option><option value="other">Other</option><option value="unsure">Not decided</option></select></p>
 <p class="field"><label for="exam_month">Exam month (optional)</label><input type="month" id="exam_month" name="exam_month" min="2026-10" max="2028-12"></p>
+</details>
 <p class="hp" aria-hidden="true"><label for="website">Leave empty</label><input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></p>
 <p class="rec-toggle"><input type="checkbox" id="consent" name="consent"> <label for="consent">I am 18 or older and I agree that READ FRANCE SAS stores my e-mail and these answers to e-mail me once when the paid options open and to count interest. I can withdraw at any time by writing to octave@vread.fr. <a href="{{base}}privacy.html#early">Privacy details</a>.</label></p>
 <p><button type="submit" class="btn">Join the list (free)</button></p>
