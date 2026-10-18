@@ -42,7 +42,7 @@ for f in sorted(OUT.glob("*.html")):
     if p.h1 != 1: errors.append(f"{f.name}: {p.h1} h1")
     if not p.desc or len(p.desc) > 200: errors.append(f"{f.name}: description missing or > 200 chars ({len(p.desc or '')})")
     if not p.canon: errors.append(f"{f.name}: canonical")
-    for k in ("A Jalonel brand", "https://jalonel.com/en/", "octave@vread.fr", "Not affiliated with"):
+    for k in ("A Jalonel brand", "https://jalonel.com/en/", "contact@jalonel.com", "Not affiliated with"):
         if k not in txt: errors.append(f"{f.name}: footer lacks {k}")
     if re.search(r"official partner|authori[sz]ed by goethe|in cooperation with goethe|goethe-approved", txt, re.I): errors.append(f"{f.name}: affiliation wording")
     if "http://" in txt.replace("http://www.sitemaps.org", ""): errors.append(f"{f.name}: http:// link")
@@ -55,7 +55,7 @@ for f in sorted(OUT.glob("*.html")):
     elif app and app[0] < cro[0]: errors.append(f"{f.name}: cro.js after app.js")
     xp = txt.find("window.OCTAVE_XP = ")
     if xp < 0 or xp > txt.find("assets/cro.js"): errors.append(f"{f.name}: OCTAVE_XP must precede cro.js")
-    if 'data-site="deutschdrill"' not in txt or 'type="module" src="/assets/cro.js' in txt or 'data-hosts="deutschdrill.jalonel.com outils.vread.fr"' not in txt: errors.append(f"{f.name}: cro.js attributes")
+    if 'data-site="deutschdrill"' not in txt or 'type="module" src="/assets/cro.js' in txt or 'data-hosts="deutschdrill.jalonel.com"' not in txt: errors.append(f"{f.name}: cro.js attributes")
 
 for name, (p, txt) in pages.items():
     for href in p.links:

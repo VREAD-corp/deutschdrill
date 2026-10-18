@@ -28,4 +28,4 @@ node scripts/indexnow.mjs               # ping IndexNow with every sitemap URL
 - Stats key: `~/.config/octave/deutschdrill.env` (never committed). Redeploy: `cd gas && clasp push --force && clasp deploy -i <deploymentId>` (clasp at `~/.local/share/octave-clasp/node_modules/.bin/clasp`).
 - Tracking: no cookie, no identifier, no IP, DNT/GPC respected; daily counters only.
 
-Content: CC BY 4.0 · Code: MIT · Contact: octave@vread.fr
+Content: CC BY 4.0 · Code: MIT · Contact: contact@jalonel.com

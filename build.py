@@ -177,7 +177,7 @@ def layout(meta, body, rel):
 <link rel="stylesheet" href="{base}assets/style.css">
 <script type="application/ld+json">{json.dumps(jsonld, ensure_ascii=False)}</script>
 <script>window.OCTAVE_XP = {json.dumps(OCTAVE_XP)};</script>
-<script src="{base}assets/cro.js?v={CRO_V}" data-site="deutschdrill" data-api="{SITE['endpoint']}" data-hosts="deutschdrill.jalonel.com outils.vread.fr" data-cta="{CRO_CTA}" defer></script>
+<script src="{base}assets/cro.js?v={CRO_V}" data-site="deutschdrill" data-api="{SITE['endpoint']}" data-hosts="deutschdrill.jalonel.com" data-cta="{CRO_CTA}" defer></script>
 <script src="{base}assets/mesure.js?v={MESURE_V}" defer></script>
 {scripts}
 </head>

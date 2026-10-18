@@ -18,7 +18,7 @@ test('every page: footer identity, disclaimer, no horizontal scroll, no console 
     expect(await page.evaluate(() => document.documentElement.scrollWidth), p).toBeLessThanOrEqual(page.viewportSize().width);
     await expect(page.locator('footer')).toContainText('A Jalonel brand');
     await expect(page.locator('footer a[href="https://jalonel.com/en/"]')).toHaveCount(1);
-    await expect(page.locator('footer')).toContainText('octave@vread.fr');
+    await expect(page.locator('footer')).toContainText('contact@jalonel.com');
     await expect(page.locator('footer .disclaimer')).toContainText('Not affiliated with');
     await expect(page.locator('h1')).toHaveCount(1);
     const name = p.replace('.html', '') || 'home';

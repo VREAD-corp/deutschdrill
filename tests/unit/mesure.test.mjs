@@ -64,9 +64,9 @@ test('Do Not Track sends nothing; prerendered pages count only once opened', () 
   assert.equal(events(r).filter((e) => e === 'view').length, 1);
 });
 
-test('only our hosts count: deutschdrill.jalonel.com, and the old outils.vread.fr/deutschdrill/ path', () => {
-  assert.deepEqual(events(run({ hostname: 'outils.vread.fr', pathname: '/deutschdrill/exam-day-india.html' })), ['view', 'guide_view']);
-  assert.deepEqual(run({ hostname: 'outils.vread.fr', pathname: '/other-site/' }).sent, []);
+test('only our host counts: deutschdrill.jalonel.com', () => {
+  assert.deepEqual(events(run({ hostname: 'deutschdrill.jalonel.com', pathname: '/exam-day-india.html' })), ['view', 'guide_view']);
+  assert.deepEqual(run({ hostname: 'other.example', pathname: '/deutschdrill/exam-day-india.html' }).sent, []);
   assert.deepEqual(run({ hostname: 'localhost', pathname: '/exam-day-india.html' }).sent, []);
   assert.equal(run().sent[0].page, '/exam-day-india.html');
 });

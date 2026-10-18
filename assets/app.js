@@ -315,7 +315,7 @@
           track('form_submit');
           if (window.octaveCro && !body.hp) window.octaveCro.goal('waitlist');
         })
-        .catch(function () { btn.disabled = false; msg.textContent = 'Sorry, that did not go through. Try again, or e-mail octave@vread.fr.'; msg.className += ' bad'; });
+        .catch(function () { btn.disabled = false; msg.textContent = 'Sorry, that did not go through. Try again, or e-mail contact@jalonel.com.'; msg.className += ' bad'; });
     };
   }
 
