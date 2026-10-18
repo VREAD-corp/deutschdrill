@@ -4,7 +4,7 @@
 Reads site.json, data/writing.py, data/speaking.py and content/*.html fragments (front matter in a
 leading HTML comment), generates the three level pages (a1/a2/b1.html), wraps everything in one
 layout and writes _site/ with sitemap.xml, robots.txt, 404.html and assets/data.js.
-Placeholders usable in fragments: {{base}}, {{endpoint}}, {{contact}}, {{repo_url}}, {{updated}}.
+Placeholders usable in fragments: {{base}}, {{endpoint}}, {{contact}}, {{updated}}.
 """
 import hashlib
 import html
@@ -33,7 +33,6 @@ E = html.escape
 JALONEL_ORG = {"@type": "Organization", "@id": "https://jalonel.com/#org", "name": "Jalonel", "url": "https://jalonel.com/",
                "parentOrganization": {"@type": "Organization", "name": "READ FRANCE SAS", "identifier": "SIREN 988741773"}}
 SITE = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))
-SITE["repo_url"] = "https://github.com/" + SITE["repo"]
 
 GOETHE_IN = "https://www.goethe.de/ins/in/en/spr/prf.html"
 SRC = {
@@ -116,7 +115,7 @@ SCRIPTS = '<script src="{base}assets/check.js" defer></script>\n<script src="{ba
 
 
 def fill(text):
-    for k in ("base", "endpoint", "contact", "repo_url", "updated"):
+    for k in ("base", "endpoint", "contact", "updated"):
         text = text.replace("{{" + k + "}}", SITE[k])
     return text
 
