@@ -34,7 +34,9 @@ app: yes
 <p class="small">Different visitors may see different monthly prices: we are testing what feels fair. Whatever you see here is not an offer; the final price, and whether GST is added to it, will be in the opening e-mail.</p>
 
 <h2 id="join" data-section="join">Join the early-access list</h2>
-<form id="early-form" novalidate>
+<form id="early-form" novalidate data-paused="1">
+<p class="paused-note">New requests are closed while the service is paused.</p>
+<fieldset class="paused-fs" disabled>
 <p class="field"><label for="email">Your e-mail</label><input type="email" id="email" name="email" autocomplete="email" required inputmode="email"></p>
 <fieldset><legend>I am interested in</legend>
 <div class="radio"><input type="radio" id="o-w" name="offer" value="writing"><label for="o-w">Writing feedback</label></div>
@@ -55,6 +57,7 @@ app: yes
 <p class="hp" aria-hidden="true"><label for="website">Leave empty</label><input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></p>
 <p class="rec-toggle"><input type="checkbox" id="consent" name="consent"> <label for="consent">I am 18 or older and I agree that READ FRANCE SAS stores my e-mail and these answers to e-mail me once when the paid options open and to count interest. I can withdraw at any time by writing to contact@jalonel.com. <a href="{{base}}privacy.html#early">Privacy details</a>.</label></p>
 <p><button type="submit" class="btn">Join the list (free)</button></p>
+</fieldset>
 <p id="form-msg" class="form-msg" role="status" aria-live="polite"></p>
 </form>
 <div id="early-done" class="done" hidden tabindex="-1">

@@ -294,6 +294,7 @@
     form.addEventListener('input', function () { if (!started) { started = true; track('form_start'); } });
     form.onsubmit = function (e) {
       e.preventDefault();
+      if (form.getAttribute('data-paused')) return; // paused since 2026-10-24: no new request is sent
       var msg = $('form-msg'); msg.className = 'form-msg';
       var email = form.email.value.trim();
       var offer = (form.querySelector('input[name=offer]:checked') || {}).value;

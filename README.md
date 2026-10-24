@@ -1,5 +1,7 @@
 # DeutschDrill: free German A1–B1 writing and speaking practice (India)
 
+**Paused since 24/10/2026** (founders' decision, Jalonel refocus): noindex, banner, requests closed; tracking kept.
+
 Live: https://deutschdrill.jalonel.com/ (brand Jalonel, a brand of READ FRANCE SAS; moved from outils.vread.fr/deutschdrill/ on 2026-10-16, old URLs redirect) · Venture AS-IN-06 of READ FRANCE SAS (Octave global ventures).
 
 - 36 original writing tasks (12 per level) with model answers and a rule-based self-check (`assets/check.js`): word count, greeting/closing and du/Sie, content-point hints, connectors, 17 error patterns common for Indian learners, manual checklist.

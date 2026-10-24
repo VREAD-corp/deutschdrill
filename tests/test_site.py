@@ -19,7 +19,7 @@ errors = []
 class P(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.h1 = 0; self.links = []; self.ids = set(); self.scripts = []; self.lang = None; self.canon = None; self.desc = None; self.noindex = False
+        self.h1 = 0; self.links = []; self.ids = set(); self.scripts = []; self.lang = None; self.canon = None; self.desc = None; self.noindex = False; self.robots = []
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
@@ -31,7 +31,7 @@ class P(HTMLParser):
         if tag == "link" and a.get("href") and a.get("rel") in ("stylesheet", "icon"): self.links.append(a["href"])
         if tag == "script" and a.get("src"): self.scripts.append(a["src"])
         if tag == "meta" and a.get("name") == "description": self.desc = a.get("content")
-        if tag == "meta" and a.get("name") == "robots" and "noindex" in (a.get("content") or ""): self.noindex = True
+        if tag == "meta" and a.get("name") == "robots": self.robots.append(a.get("content"))
 
 
 pages = {}
@@ -42,6 +42,11 @@ for f in sorted(OUT.glob("*.html")):
     if p.h1 != 1: errors.append(f"{f.name}: {p.h1} h1")
     if not p.desc or len(p.desc) > 200: errors.append(f"{f.name}: description missing or > 200 chars ({len(p.desc or '')})")
     if not p.canon: errors.append(f"{f.name}: canonical")
+    # paused since 2026-10-24: one robots tag, noindex, and the pause banner on every page
+    if p.robots != ["noindex"]: errors.append(f"{f.name}: robots {p.robots}")
+    if 'class="jal-pause"' not in txt or "This service is paused." not in txt: errors.append(f"{f.name}: pause banner")
+    src = OUT.parent / "content" / f.name
+    p.noindex = src.exists() and "\nnoindex: yes" in src.read_text(encoding="utf-8").split("-->")[0]  # sitemap rule, unchanged by the pause
     for k in ("A Jalonel brand", "https://jalonel.com/en/", "contact@jalonel.com", "Not affiliated with"):
         if k not in txt: errors.append(f"{f.name}: footer lacks {k}")
     if re.search(r"official partner|authori[sz]ed by goethe|in cooperation with goethe|goethe-approved", txt, re.I): errors.append(f"{f.name}: affiliation wording")

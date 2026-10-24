@@ -97,7 +97,7 @@ test('speaking room: timers and local recording, nothing uploaded', async ({ pag
   expect(external, 'no request other than the tiny anonymous counter may leave the page; audio never').toEqual([]);
 });
 
-test('early access: price arm, currency switch, consent required, posts to own endpoint', async ({ page }, info) => {
+test('early access: price arm, currency switch, form closed while paused', async ({ page }, info) => {
   let posted = null;
   await page.route(/script\.google\.com\/macros/, async (route) => {
     const body = route.request().postData() || '';
@@ -112,15 +112,15 @@ test('early access: price arm, currency switch, consent required, posts to own e
   await expect(page.locator('.price .amount').nth(1)).toHaveText('$24');
   await expect(page.locator('main')).toContainText('No human examiner');
   await expect(page.locator('main')).toContainText('no payment is asked now');
-  await page.locator('#email').fill('learner@example.com');
-  await page.locator('#pl-p').check();
-  await page.locator('button[type=submit]').click();
-  await expect(page.locator('#form-msg')).toContainText('consent');
+  // paused since 2026-10-24: the form is shown but closed, nothing is sent
+  await expect(page.locator('#early-form .paused-note')).toHaveText('New requests are closed while the service is paused.');
+  await expect(page.locator('#email')).toBeDisabled();
+  await expect(page.locator('#early-form button[type=submit]')).toBeDisabled();
+  await page.locator('#early-form').evaluate((f) => f.requestSubmit());
+  await expect(page.locator('#early-done')).toBeHidden();
   expect(posted).toBeNull();
-  await page.locator('#consent').check();
-  await page.locator('button[type=submit]').click();
-  await expect(page.locator('#early-done')).toBeVisible();
-  expect(posted).toMatchObject({ action: 'early', email: 'learner@example.com', variant: 'p499', currency: 'usd', plan: 'pass3', offer: 'both', consent: true });
+  await expect(page.locator('body > .jal-pause')).toContainText('This service is paused.');
+  expect(await page.locator('meta[name=robots]').evaluateAll((m) => m.map((x) => x.content))).toEqual(['noindex']);
   await shot(page, 'early-done', info);
 });
 

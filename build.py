@@ -24,6 +24,7 @@ OCTAVE_XP = [{"id": "price", "variants": ["p499", "p799"], "mode": "tab", "param
 # Primary CTAs for time-to-first-click: practice/early-access buttons, the form submit and the room actions.
 CRO_CTA = "[data-mesure=cta_click],#early-form button[type=submit],#check-btn,#form-check-btn,#go-btn"
 OUT = ROOT / "_site"
+PAUSED = True  # 2026-10-24: noindex on every page, pause banner, early-access form closed
 sys.path.insert(0, str(ROOT / "data"))
 from writing import WRITING  # noqa: E402
 from speaking import SPEAKING  # noqa: E402
@@ -153,7 +154,9 @@ def layout(meta, body, rel):
         "isAccessibleForFree": True, "dateModified": meta.get("updated", SITE["updated"]),
         "publisher": JALONEL_ORG,
     }
-    robots = '\n<meta name="robots" content="noindex">' if meta.get("noindex") == "yes" else ""
+    # Paused since 2026-10-24 (founders' decision, Jalonel refocus): every page is noindex. The sitemap still follows the
+    # page's own `noindex` field, so it is unchanged by the pause.
+    robots = '\n<meta name="robots" content="noindex">' if PAUSED or meta.get("noindex") == "yes" else ""
     scripts = SCRIPTS.format(base=base) if meta.get("app") == "yes" else ""
     return f"""<!doctype html>
 <html lang="en-IN">
@@ -182,6 +185,7 @@ def layout(meta, body, rel):
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
+<div class="jal-pause" role="note"><p>This service is paused. Other tools: <a href="https://jalonel.com/en/">jalonel.com</a></p></div>
 <header class="site-header">
 <div class="wrap header-inner">
 <a class="brand" href="{base}">Deutsch<span>Drill</span></a>
